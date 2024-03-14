@@ -40,9 +40,9 @@ aug:
   warp_rho: 2
 
 model:
-  tiny: true
+  tiny: false
   input_size: 800
-  weights_path: 'models/yolov4-tiny.h5'
+  weights_path: 'models/yolov8n.pt'
   weights_type: 'tf'
 
 
