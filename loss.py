@@ -1,8 +1,7 @@
 from os import makedirs, path
 import tensorflow as tf
-from tensorflow.keras import backend
-from tensorflow.keras.losses import BinaryCrossentropy, Loss, Reduction
-
+from keras import backend
+from keras.losses import BinaryCrossentropy, Loss, Reduction
 
 class YOLOv4Loss(Loss):
     """

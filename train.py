@@ -10,16 +10,42 @@ import numpy as np
 import argparse
 from utils import detect_hardware
 import pickle
+from keras import layers
+import random
+from predict import predict
+
+gpus = tf.config.list_physical_devices('GPU')
+for gpu in gpus:
+    tf.config.experimental.set_memory_growth(gpu, True)
 
 import random
 
-# # Load a model
-# model = YOLO('yolov8n.yaml')  # build a new model from YAML
-# model = YOLO('yolov8n.pt')  # load a pretrained model (recommended for training)
-# model = YOLO('yolov8n.yaml').load('yolov8n.pt')  # build from YAML and transfer weights
+# def make_model(
+#         yolo,
+#         activation0: str = "mish",
+#         activation1: str = "leaky",
+#         kernel_regularizer=tf.keras.regularizers.l2(0.0005),
+# ):
+#     """Use this function instead of yolo.make_model()"""
+#     yolo._has_weights = False
+#     # height, width, channels
+#     inputs = layers.Input([yolo.input_size[1], yolo.input_size[0], 3])
 
-# Train the model
-# results = model.train(data='coco128.yaml', epochs=100, imgsz=800)
+#     yolo.model = YOLO(
+#         num_classes=len(yolo.classes),
+#         activation0=activation0,
+#         activation1=activation1,
+#         kernel_regularizer=kernel_regularizer,
+#     )
+#     yolo.model(inputs)
+
+
+def build_model(cfg, classes='classes'):
+    yolo = YOLO(model=cfg.model.weights_path, verbose=True)
+    yolo.classes = classes
+    yolo.input_size = (cfg.model.input_size, cfg.model.input_size)
+    yolo.batch_size = cfg.train.batch_size
+    return yolo
 
 def train(cfg, strategy):
     img_path = osp.join(cfg.data.path, 'cropped_images', str(cfg.model.input_size))
@@ -75,11 +101,7 @@ def train(cfg, strategy):
     with strategy.scope():
         lr = tf.keras.experimental.CosineDecay(cfg.train.lr, cfg.train.epochs * spe)
         optimizer = tf.keras.optimizers.Adam(lr)
-        loss = YOLOv4Loss(
-            batch_size=yolo.batch_size,
-            iou_type=cfg.train.loss_type,
-            verbose=cfg.train.loss_verbose)
-        yolo.model.compile(optimizer=optimizer, loss=loss)
+        yolo.model.compile(optimizer=optimizer)
 
     val_steps = {'d1': 20, 'd2': 8}
 
@@ -101,7 +123,7 @@ def train(cfg, strategy):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--cfg', default='default')
+    parser.add_argument('-c', '--cfg', default='deepdarts_d1')
     args = parser.parse_args()
 
     cfg = CN(new_allowed=True)
@@ -110,4 +132,4 @@ if __name__ == '__main__':
 
     tpu, strategy = detect_hardware(tpu_name=None)
     yolo = train(cfg, strategy)
-    # predict(yolo, cfg, dataset=cfg.data.dataset, split='val')
+    predict(yolo, cfg, dataset=cfg.data.dataset, split='val')

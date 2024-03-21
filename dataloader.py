@@ -7,7 +7,7 @@ import numpy as np
 import cv2
 from dataset.annotate import draw, transform
 from yacs.config import CfgNode as CN
-from yolov4.tf.dataset import cut_out
+# from yolov4.tf.dataset import cut_out
 
 
 d1_val = ['d1_02_06_2020', 'd1_02_16_2020', 'd1_02_22_2020']
@@ -97,11 +97,11 @@ def preprocess(path, xy, cfg, bbox_to_gt_func, split='train', return_xy=False):
 
     bboxes = get_bounding_boxes(xy, cfg.train.bbox_size)
 
-    if split == 'train':
-        # cutout augmentation
-        if cfg.aug.cutout_prob and np.random.uniform() < cfg.aug.cutout_prob:
-            img, bboxes = cut_out([np.expand_dims(img, axis=0), bboxes])
-            img = img[0]
+    # if split == 'train':
+    #     # cutout augmentation
+    #     if cfg.aug.cutout_prob and np.random.uniform() < cfg.aug.cutout_prob:
+    #         img, bboxes = cut_out([np.expand_dims(img, axis=0), bboxes])
+    #         img = img[0]
 
     gt = bbox_to_gt_func(bboxes)
     gt = [item.squeeze() for item in gt]

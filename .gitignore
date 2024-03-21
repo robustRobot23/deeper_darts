@@ -1,1 +1,7 @@
 dataset/*
+models/yolov8n.pt
+all_labels.tsv
+*/.pyc
+__pycache__/dataloader.cpython-310.pyc
+__pycache__/predict.cpython-310.pyc
+__pycache__/utils.cpython-310.pyc
