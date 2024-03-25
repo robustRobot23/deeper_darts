@@ -19,19 +19,47 @@ def get_bounding_boxes(xy, size):
     xywhc = np.array(xywhc)
     return xywhc
 
+def create_label_lines(xywhcs):
+    labels = ''
+    for xywhc in xywhcs:
+        x,y,w,h,c = xywhc
+
+        # if c == 0: # darts
+        #     x = 1 - x
+        # else: #calibration points
+        y = 1 - y
+
+        y1 = round(y + h, 3)
+        y2 = round(y - h, 3)
+        x1 = round(x + w, 3)
+        x2 = round(x - w, 3)
+        labels += f"{int(c)} {x1} {y1} {x2} {y2}\n"
+    labels = labels[:-1] #remove final newline char
+    return labels
+
+def save_labels_as_txt_file(labels, label_path, directory,filename):
+    file_dir = f"{label_path}/{directory}"
+    filepath = f"{file_dir}/{filename}.txt"
+    if not os.path.isdir(file_dir):
+        print(f"dir '{file_dir}' doesn't exist, making it")
+        os.mkdir(file_dir)
+
+    with open(filepath, 'w') as f:
+         f.writelines(labels)
+
 if __name__ == "__main__":
     label_path = 'dataset/labels'
     with open("all_labels.tsv", "r") as f:
         all = f.readlines()
+        i = 0
         for line in all:
             directory, filename, bbox, xy = line.split("\t")
-            if not os.path.isdir(f"{label_path}/{directory}"):
-                os.mkdir(f"{label_path}/{directory}")
+            filename = filename.split('.')[0]
+            
             xy = np.array(ast.literal_eval(xy))
             xywhc = get_bounding_boxes(xy,0.025)
-            break
-            # with open(f"label_path}/{directory}/{filename}", "w") as label_file:
-            #     i = 0
-            #     for xy in xys:
-            #         i+=1
-            #         label_file.write(f"{i} {xy[0]}")
+            labels = create_label_lines(xywhc)
+            save_labels_as_txt_file(labels, label_path, directory,filename)
+            i += 1
+            if i == 10:
+                break
