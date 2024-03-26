@@ -24,11 +24,6 @@ def create_label_lines(xywhcs):
     for xywhc in xywhcs:
         x,y,w,h,c = xywhc
 
-        # if c == 0: # darts
-        #     x = 1 - x
-        # else: #calibration points
-        y = 1 - y
-
         y1 = round(y + h, 3)
         y2 = round(y - h, 3)
         x1 = round(x + w, 3)
