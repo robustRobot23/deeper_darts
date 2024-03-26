@@ -41,7 +41,7 @@ def save_labels_as_txt_file(labels, label_path, directory,filename):
     file_dir = f"{label_path}/{directory}"
     filepath = f"{file_dir}/{filename}.txt"
     if not os.path.isdir(file_dir):
-        print(f"dir '{file_dir}' doesn't exist, making it")
+        # print(f"dir '{file_dir}' doesn't exist, making it")
         os.mkdir(file_dir)
 
     with open(filepath, 'w') as f:
@@ -51,7 +51,6 @@ if __name__ == "__main__":
     label_path = 'dataset/labels'
     with open("all_labels.tsv", "r") as f:
         all = f.readlines()
-        i = 0
         for line in all:
             directory, filename, bbox, xy = line.split("\t")
             filename = filename.split('.')[0]
@@ -60,6 +59,3 @@ if __name__ == "__main__":
             xywhc = get_bounding_boxes(xy,0.025)
             labels = create_label_lines(xywhc)
             save_labels_as_txt_file(labels, label_path, directory,filename)
-            i += 1
-            if i == 10:
-                break

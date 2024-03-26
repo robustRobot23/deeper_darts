@@ -1,0 +1,6 @@
+train: /csse/users/hev23/Documents/Computer Vision/Project/deeper_darts/datasets/train
+val: /csse/users/hev23/Documents/Computer Vision/Project/deeper_darts/datasets/val
+
+nc: 5
+
+names: ['0','1','2','3','4']
