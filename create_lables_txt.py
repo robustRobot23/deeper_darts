@@ -4,6 +4,7 @@ import numpy as np
 import ast 
 
 def get_bounding_boxes(xy, size):
+    '''Code from DeepDarts '''
     xy[((xy[:, 0] - size / 2 <= 0) |
         (xy[:, 0] + size / 2 >= 1) |
         (xy[:, 1] - size / 2 <= 0) |
