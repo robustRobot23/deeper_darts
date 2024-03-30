@@ -11,3 +11,5 @@ __pycache__/utils.cpython-310.pyc
 */weights/*
 runs/detect/train11/weights/*
 *yolov8n.pt
+
+*.out*

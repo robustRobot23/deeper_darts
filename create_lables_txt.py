@@ -24,12 +24,9 @@ def create_label_lines(xywhcs):
     labels = ''
     for xywhc in xywhcs:
         x,y,w,h,c = xywhc
-
-        y1 = round(y + h, 3)
-        y2 = round(y - h, 3)
-        x1 = round(x + w, 3)
-        x2 = round(x - w, 3)
-        labels += f"{int(c)} {x1} {y1} {x2} {y2}\n"
+        if (x < 0) or (y < 0):
+            print(f"grr")
+        labels += f"{c} {x} {y} {w} {h}\n"
     labels = labels[:-1] #remove final newline char
     return labels
 
