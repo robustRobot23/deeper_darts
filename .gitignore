@@ -6,6 +6,6 @@ all_labels.tsv
 */images/*
 */labels/*
 */weights/*
-runs/detect/train11/weights/*
 *.pt
+!runs/detect/SecondRun/weights/best.pt
 *.out*

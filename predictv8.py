@@ -1,7 +1,7 @@
 import cv2
+import os
 import numpy as np
 from dataset.annotate import draw, get_dart_scores
-
 
 def bboxes_to_xy(bboxes, max_darts=3):
     xy = np.zeros((4 + max_darts, 3), dtype=np.float32)
@@ -53,16 +53,42 @@ def est_cal_pts(xy):
         print('Missed more than 1 calibration point')
     return xy
 
+def list_images_in_folder(folder_path):
+    # List to store image file paths
+    image_list = []
+
+    # Iterate through files in the folder
+    for filename in os.listdir(folder_path):
+        # Check if the file is a regular file and has an image extension
+        if os.path.isfile(os.path.join(folder_path, filename)) and \
+           filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
+            # If the file is an image, add its path to the list
+            image_list.append(os.path.join(folder_path, filename))
+
+    return image_list
 
 
 if __name__ == '__main__':
     from ultralytics import YOLO
-    image_path = ''
+    
+    image_folder_path = 'some_test_imgs'
+    images = list_images_in_folder(image_folder_path)
+    print("imported yolo")
+    model = YOLO('runs/detect/SecondRun/weights/best.pt')
+    
+    for i in range(len(images)):
+        image = images[i]
+        image_name = images[i].split('/')[-1]
+        print(f"Processing {i}th image: '{image_name}'")
 
-    model = YOLO('models/yolov8n.pt')
-    results = model(image_path)
-    for result in results:
+        result = model(image)[0]
         boxes = result.boxes
+        print(boxes)
+        # result.save(filename=image_name)
+        # result.show() #display results to screen
+        
+
         xy = bboxes_to_xy(boxes)
-        results.show() #display results to screen
+        # print(xy)
+        # print("got xy")
 
