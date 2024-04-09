@@ -71,7 +71,8 @@ def list_images_in_folder(folder_path):
 if __name__ == '__main__':
     from ultralytics import YOLO
     
-    image_folder_path = 'some_test_imgs'
+    # image_folder_path = 'some_test_imgs'
+    image_folder_path  = 'Personal Dart Board Images'
     images = list_images_in_folder(image_folder_path)
     print("imported yolo")
     model = YOLO('runs/detect/SecondRun/weights/best.pt')
