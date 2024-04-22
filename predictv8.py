@@ -7,24 +7,38 @@ def bboxes_to_xy(bboxes, max_darts=3):
     xy = np.zeros((4 + max_darts, 3), dtype=np.float32)
     dart_xys = np.array([])
     num_darts = 0
+    max_darts_exceeded = False
+    collumns = []
+    # print(f"Length of bboxes: {len(bboxes)}")
+    print(bboxes)
+    print()
     for bbox in bboxes: 
-        if bbox.cls == 0: #bbox is around a dart, add dart centre to xy array
+        if int(bbox.cls) == 0 and not max_darts_exceeded: #bbox is around a dart, add dart centre to xy array
             dart_xywhn = bbox.xywhn[0] #centre coordinates
             # print(f"Dart found with xywhn: {dart_xywhn}")
             dart_x_centre = float(dart_xywhn[0])
             dart_y_centre = float(dart_xywhn[1])
             dart_xy_centre = np.array([dart_x_centre,dart_y_centre])
             # print(f"Dart centre xyn: {dart_xy_centre}")
-            xy[4+num_darts,:2] = dart_xy_centre
+            # print(f"Num_darts: {num_darts}")
+            
+            collumn = 4+num_darts
+            xy[collumn,:2] = dart_xy_centre
             num_darts += 1
+            if num_darts > max_darts:
+                print("Max number of darts exceeded, ignoring any other detected darts")
+                print("Need to add check for overlapping dart bounding boxes")
+                max_darts_exceeded = True
+
         else:
             cal_xywhn = bbox.xywhn[0] #centre coordinates
             cal_x_centre = float(cal_xywhn[0])
             cal_y_centre = float(cal_xywhn[1])
             cal_xy_centre = np.array([cal_x_centre,cal_y_centre])
-            xy[int(bbox.cls)-1, :2] = cal_xy_centre #put calibration point in correct place in array
 
-    # print(f"xy: {xy[:, :2]}")
+            collumn = int(bbox.cls)-1
+            xy[collumn, :2] = cal_xy_centre #put calibration point in correct place in array
+
 
     xy[(xy[:, 0] > 0) & (xy[:, 1] > 0), -1] = 1
     if np.sum(xy[:4, -1]) == 4:
@@ -83,14 +97,22 @@ def list_images_in_folder(folder_path):
 
 if __name__ == '__main__':
     from ultralytics import YOLO
+    from yacs.config import CfgNode as CN
+    import os.path as osp
+
+    cfg = CN(new_allowed=True)
+    cfg.merge_from_file('configs/deepdarts_d1.yaml')
     
     # image_folder_path = 'some_test_imgs'
-    image_folder_path  = 'Personal Dart Board Images'
+    # image_folder_path  = 'Personal Dart Board Images'
+    # image_folder_path = '40_epoch_results'
+    image_folder_path = 'datasets/val/images/d1_03_23_2020'
     images = list_images_in_folder(image_folder_path)
     print("imported yolo")
     model = YOLO('runs/detect/SecondRun/weights/best.pt')
     
-    for i in range(1):#len(images)):
+    # for i in range(len(images)):
+    for i in range(1):
         image = images[i]
         image_name = images[i].split('/')[-1]
         print(f"Processing {i}th image: '{image_name}'")
@@ -105,7 +127,7 @@ if __name__ == '__main__':
         xy = bboxes_to_xy(boxes) 
         xy = xy[xy[:, -1] == 1] #remove any empty rows
         print(xy)
-        # print("got xy")
-        # score = get_dart_scores()
+        score = get_dart_scores(xy,cfg, numeric=False)
+        print(score)
         # error = sum(get_dart_scores(preds[i, :, :2], cfg, numeric=True)) - sum(get_dart_scores(xys[i, :, :2], cfg, numeric=True))
 
