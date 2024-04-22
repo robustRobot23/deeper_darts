@@ -5,14 +5,27 @@ from dataset.annotate import draw, get_dart_scores
 
 def bboxes_to_xy(bboxes, max_darts=3):
     xy = np.zeros((4 + max_darts, 3), dtype=np.float32)
-    for cls in range(5):
-        if cls == 0:
-            dart_xys = bboxes[bboxes[:, 4] == 0, :2][:max_darts]
-            xy[4:4 + len(dart_xys), :2] = dart_xys
+    dart_xys = np.array([])
+    num_darts = 0
+    for bbox in bboxes: 
+        if bbox.cls == 0: #bbox is around a dart, add dart centre to xy array
+            dart_xywhn = bbox.xywhn[0] #centre coordinates
+            # print(f"Dart found with xywhn: {dart_xywhn}")
+            dart_x_centre = float(dart_xywhn[0])
+            dart_y_centre = float(dart_xywhn[1])
+            dart_xy_centre = np.array([dart_x_centre,dart_y_centre])
+            # print(f"Dart centre xyn: {dart_xy_centre}")
+            xy[4+num_darts,:2] = dart_xy_centre
+            num_darts += 1
         else:
-            cal = bboxes[bboxes[:, 4] == cls, :2]
-            if len(cal):
-                xy[cls - 1, :2] = cal[0]
+            cal_xywhn = bbox.xywhn[0] #centre coordinates
+            cal_x_centre = float(cal_xywhn[0])
+            cal_y_centre = float(cal_xywhn[1])
+            cal_xy_centre = np.array([cal_x_centre,cal_y_centre])
+            xy[int(bbox.cls)-1, :2] = cal_xy_centre #put calibration point in correct place in array
+
+    # print(f"xy: {xy[:, :2]}")
+
     xy[(xy[:, 0] > 0) & (xy[:, 1] > 0), -1] = 1
     if np.sum(xy[:4, -1]) == 4:
         return xy
@@ -76,19 +89,22 @@ if __name__ == '__main__':
     print("imported yolo")
     model = YOLO('runs/detect/SecondRun/weights/best.pt')
     
-    for i in range(len(images)):
+    for i in range(1):#len(images)):
         image = images[i]
         image_name = images[i].split('/')[-1]
         print(f"Processing {i}th image: '{image_name}'")
 
-        result = model(image)[0]
+        result = model.predict(image)[0]
         boxes = result.boxes
-        print(boxes)
+        # print(boxes.data[1])
         # result.save(filename=image_name)
         # result.show() #display results to screen
         
 
-        xy = bboxes_to_xy(boxes)
-        # print(xy)
+        xy = bboxes_to_xy(boxes) 
+        xy = xy[xy[:, -1] == 1] #remove any empty rows
+        print(xy)
         # print("got xy")
+        # score = get_dart_scores()
+        # error = sum(get_dart_scores(preds[i, :, :2], cfg, numeric=True)) - sum(get_dart_scores(xys[i, :, :2], cfg, numeric=True))
 
