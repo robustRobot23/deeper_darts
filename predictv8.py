@@ -2,16 +2,14 @@ import cv2
 import os
 import numpy as np
 from dataset.annotate import draw, get_dart_scores
+import random
+# def remove_overlapping_darts(bboxes):
 
 def bboxes_to_xy(bboxes, max_darts=3):
     xy = np.zeros((4 + max_darts, 3), dtype=np.float32)
-    dart_xys = np.array([])
     num_darts = 0
     max_darts_exceeded = False
-    collumns = []
-    # print(f"Length of bboxes: {len(bboxes)}")
-    print(bboxes)
-    print()
+
     for bbox in bboxes: 
         if int(bbox.cls) == 0 and not max_darts_exceeded: #bbox is around a dart, add dart centre to xy array
             dart_xywhn = bbox.xywhn[0] #centre coordinates
@@ -23,7 +21,10 @@ def bboxes_to_xy(bboxes, max_darts=3):
             # print(f"Num_darts: {num_darts}")
             
             collumn = 4+num_darts
-            xy[collumn,:2] = dart_xy_centre
+            try:
+                xy[collumn,:2] = dart_xy_centre
+            except IndexError:
+                print(f"Couldn't add dart {num_darts+1}, index error")
             num_darts += 1
             if num_darts > max_darts:
                 print("Max number of darts exceeded, ignoring any other detected darts")
@@ -94,6 +95,32 @@ def list_images_in_folder(folder_path):
 
     return image_list
 
+def get_label_xy(image_name, folder_path, max_darts=3):
+    label_name = image_name.replace("JPG", "txt")
+    label_path = f"{folder_path}/{label_name}".replace("images", "labels")
+    # print(f"Label path: {label_path}")
+    label_xy = np.zeros((4 + max_darts, 3), dtype=np.float32)
+    num_darts = 0
+    with open(label_path, 'r') as f:
+        labels = f.readlines()
+        # print(f"Length of labels: {len(labels)}")
+        for label in labels:
+            split_label = label.split(" ")
+            class_num = int(split_label[0])
+            x_centre = float(split_label[1])
+            y_centre = float(split_label[2])
+            xy_centre = np.array([x_centre, y_centre])
+            
+            if class_num == 0:
+                label_xy[4+num_darts, :2] = xy_centre
+                num_darts += 1
+                # print(f"Dart {num_darts}: {xy_centre}")
+            else:
+                label_xy[class_num - 1, :2] = xy_centre
+
+    # print(f"{num_darts} darts found in labels")
+    label_xy[(label_xy[:, 0] > 0) & (label_xy[:, 1] > 0), -1] = 1
+    return label_xy
 
 if __name__ == '__main__':
     from ultralytics import YOLO
@@ -110,24 +137,40 @@ if __name__ == '__main__':
     images = list_images_in_folder(image_folder_path)
     print("imported yolo")
     model = YOLO('runs/detect/SecondRun/weights/best.pt')
-    
-    # for i in range(len(images)):
-    for i in range(1):
+    errors = []
+
+    labeled_img_dir = image_folder_path.replace("images", "scored_images")
+    os.makedirs(labeled_img_dir, exist_ok=True)
+
+    for i in range(len(images)):
         image = images[i]
         image_name = images[i].split('/')[-1]
-        print(f"Processing {i}th image: '{image_name}'")
+        # print(f"Processing {i}th image: '{image_name}'")
 
         result = model.predict(image)[0]
-        boxes = result.boxes
-        # print(boxes.data[1])
-        # result.save(filename=image_name)
-        # result.show() #display results to screen
-        
+        boxes = result.boxes        
 
         xy = bboxes_to_xy(boxes) 
         xy = xy[xy[:, -1] == 1] #remove any empty rows
-        print(xy)
-        score = get_dart_scores(xy,cfg, numeric=False)
-        print(score)
-        # error = sum(get_dart_scores(preds[i, :, :2], cfg, numeric=True)) - sum(get_dart_scores(xys[i, :, :2], cfg, numeric=True))
+        predicted_score = get_dart_scores(xy,cfg, numeric=False)
 
+        label_xy = get_label_xy(image_name, image_folder_path)
+        label_xy = label_xy[label_xy[:, -1] == 1] #remove any empty rows
+        actual_score = get_dart_scores(label_xy, cfg, numeric=False)
+
+        error = sum(get_dart_scores(xy, cfg, numeric=True)) - sum(get_dart_scores(label_xy, cfg, numeric=True))
+        errors.append(error)
+        if error != 0:
+            print(f"Scoring board from image {image_name}")
+            print(f"Predicted Score: {predicted_score}")
+            print(f"Actual Score: {actual_score}") 
+            print(f"Error: {error}")
+
+        img = cv2.imread(image)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = draw(cv2.cvtColor(img, cv2.COLOR_RGB2BGR), xy[:, :2], cfg, circles=False, score=True)
+        cv2.imwrite(osp.join(labeled_img_dir, image_name), img)
+
+    abs_errors = map(abs, errors)
+    print(f"Average absolute error:{sum(abs_errors)/len(errors)}")
+    print(f"Average error: {sum(errors)/len(errors)}")
