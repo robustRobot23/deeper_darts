@@ -4,6 +4,12 @@ import numpy as np
 from dataset.annotate import draw, get_dart_scores
 import random
 # def remove_overlapping_darts(bboxes):
+import logging
+# Set up logging
+log_file = "processing_output.log"
+logging.basicConfig(filename=log_file, filemode='w', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+est_cal_pts_cnt = 0
 
 def bboxes_to_xy(bboxes, max_darts=3):
     xy = np.zeros((4 + max_darts, 3), dtype=np.float32)
@@ -50,6 +56,8 @@ def bboxes_to_xy(bboxes, max_darts=3):
 
 
 def est_cal_pts(xy):
+    global est_cal_pts_cnt
+    est_cal_pts_cnt += 1
     missing_idx = np.where(xy[:4, -1] == 0)[0]
     if len(missing_idx) == 1:
         if missing_idx[0] <= 1:
@@ -138,6 +146,7 @@ if __name__ == '__main__':
     print("imported yolo")
     model = YOLO('runs/detect/SecondRun/weights/best.pt')
     errors = []
+    no_error_total = 0
 
     labeled_img_dir = image_folder_path.replace("images", "scored_images")
     os.makedirs(labeled_img_dir, exist_ok=True)
@@ -165,6 +174,8 @@ if __name__ == '__main__':
             print(f"Predicted Score: {predicted_score}")
             print(f"Actual Score: {actual_score}") 
             print(f"Error: {error}")
+        else:
+            no_error_total += 1
 
         img = cv2.imread(image)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -174,3 +185,5 @@ if __name__ == '__main__':
     abs_errors = map(abs, errors)
     print(f"Average absolute error:{sum(abs_errors)/len(errors)}")
     print(f"Average error: {sum(errors)/len(errors)}")
+    print(f"PCS: {round((100/len(errors))*no_error_total,1)}%")
+    print(f"Estimated Calibration Points {est_cal_pts_cnt} times")
