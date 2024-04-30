@@ -5,8 +5,8 @@ all_labels.tsv
 *.pyc
 *images/*
 *labels/*
-*weights/*
-*.pt
+# *weights/*
+# *.pt
 !runs/detect/SecondRun/weights/best.pt
 *.out*
 */images
