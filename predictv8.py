@@ -144,7 +144,9 @@ if __name__ == '__main__':
     image_folder_path = 'datasets/val/images/d1_03_23_2020'
     images = list_images_in_folder(image_folder_path)
     print("imported yolo")
-    model = YOLO('runs/detect/SecondRun/weights/best.pt')
+    # best_weights_path = 'runs/detect/SecondRun/weights/best.pt'
+    best_weights_path = 'runs/detect/DeeperDarts/weights/best.pt'
+    model = YOLO(best_weights_path)
     errors = []
     no_error_total = 0
 
