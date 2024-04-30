@@ -3,4 +3,9 @@ val: /csse/users/hev23/Documents/Computer Vision/Project/deeper_darts/datasets/v
 
 nc: 5
 
-names: ['0','1','2','3','4']
+names:
+  0: Dart
+  1: Cal1
+  2: Cal2
+  3: Cal3
+  4: Cal4
