@@ -29,12 +29,7 @@ class Watcher(FileSystemEventHandler):
 
 # Start monitoring the directory for changes
 if __name__ == "__main__":
-    observer = Observer()
-    observer.schedule(Watcher(), path=directory_to_watch, recursive=True)
-    observer.start()
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
-    observer.join()
+    while True:
+        print("Checking for changes...")
+        push_changes()
+        time.sleep(300)  # 300 seconds = 5 minutes
