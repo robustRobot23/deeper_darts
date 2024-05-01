@@ -141,7 +141,8 @@ if __name__ == '__main__':
     # image_folder_path = 'some_test_imgs'
     # image_folder_path  = 'Personal Dart Board Images'
     # image_folder_path = '40_epoch_results'
-    image_folder_path = 'datasets/val/images/d1_03_23_2020'
+    # image_folder_path = 'datasets/val/images/d1_03_23_2020'
+    image_folder_path = 'datasets/test/images/d1_03_31_2020'
     images = list_images_in_folder(image_folder_path)
     print("imported yolo")
     # best_weights_path = 'runs/detect/SecondRun/weights/best.pt'
@@ -152,6 +153,8 @@ if __name__ == '__main__':
 
     labeled_img_dir = image_folder_path.replace("images", "scored_images")
     os.makedirs(labeled_img_dir, exist_ok=True)
+    predicted_img_dir = image_folder_path.replace("images", "predicted_images")
+    os.makedirs(predicted_img_dir, exist_ok=True)
 
     for i in range(len(images)):
         image = images[i]
@@ -159,6 +162,7 @@ if __name__ == '__main__':
         # print(f"Processing {i}th image: '{image_name}'")
 
         result = model.predict(image)[0]
+        result.save(f"{predicted_img_dir}/{image_name}.JPG")
         boxes = result.boxes        
 
         xy = bboxes_to_xy(boxes) 
@@ -176,6 +180,7 @@ if __name__ == '__main__':
             print(f"Predicted Score: {predicted_score}")
             print(f"Actual Score: {actual_score}") 
             print(f"Error: {error}")
+            logging.log(logging.WARN, f"Image {image_folder_path}/{image_name} had an error of {error}. Actual score: {actual_score}, Predicted score: {predicted_score}")
         else:
             no_error_total += 1
 

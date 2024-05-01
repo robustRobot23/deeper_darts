@@ -19,8 +19,8 @@ xys= [[0.4405684754521964, 0.12782440284054228], [0.5594315245478035, 0.87217559
 
 
 def display_from_file(relative_img_path):
-    image = f"dataset/images/{relative_img_path}.JPG"
-    label = f"dataset/labels/{relative_img_path}.txt"
+    image = f"datasets/test/images/{relative_img_path}.JPG"
+    label = f"datasets/test/labels/{relative_img_path}.txt"
     
     img = plt.imread(image)
     fig, ax = plt.subplots()
@@ -31,25 +31,30 @@ def display_from_file(relative_img_path):
     with open(label, 'r') as f:
         lines = f.readlines()
         for line in lines:
-            c,x1,y1,x2,y2 = line.strip().split(' ')
+            c,x,y,w,h = line.strip().split(' ')
+            x = float(x)
+            y = 1 - float(y)
+            w = float(w)
+            h = float(h)
             c = int(c)
-            x1 = float(x1)
-            y1 = float(y1)
-            x2 = float(x2)
-            y2 = float(y2)
-            mid_x = (x1+x2)/2
-            mid_y = (y1+y2)/2
+
+            x1 = x - w/2
+            y1 = y - h/2
+            x2 = x + w/2
+            y2 = y + h/2
+
             #plot box
             plt.plot([x1,x2], [y1,y1], colours[c], linewidth=0.5)
             plt.plot([x1,x1], [y1,y2], colours[c], linewidth=0.5)
             plt.plot([x1,x2], [y2,y2], colours[c], linewidth=0.5)
             plt.plot([x2,x2], [y1,y2], colours[c], linewidth=0.5)
             #plot cross hairs
-            plt.plot([mid_x,mid_x], [y1,y2], colours[c], linewidth=0.5, linestyle=(0,(5,10))) # loosely dashed linestyle
-            plt.plot([x1,x2], [mid_y, mid_y], colours[c], linewidth=0.5, linestyle=(0,(5,10)))
+            plt.plot([x,x], [y1,y2], colours[c], linewidth=0.5, linestyle=(0,(5,10))) # loosely dashed linestyle
+            plt.plot([x1,x2], [y, y], colours[c], linewidth=0.5, linestyle=(0,(5,10)))
 
     plt.show()
 
 image_path = "d1_02_04_2020/IMG_1081"
 image_path = 'd1_02_04_2020/IMG_1087'
+image_path = "d1_03_31_2020/IMG_6996"
 display_from_file(image_path)

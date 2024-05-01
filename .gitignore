@@ -6,7 +6,7 @@ all_labels.tsv
 *images/*
 *labels/*
 # *weights/*
-# *.pt
+*.pt
 !runs/detect/SecondRun/weights/best.pt
 *.out*
 */images
