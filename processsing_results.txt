@@ -1,7 +1,7 @@
 Folder: image_folder_path = 'datasets/val/images/d1_03_23_2020'
 
-Results:
-Average absolute error:2.9448818897637796
-Average error: -0.28346456692913385
-PCS: 89.8%
+Results DeepDarts2:
+Average absolute error:2.3622047244094486
+Average error: 0.9291338582677166
+PCS: 91.3%
 Estimated Calibration Points 0 times
