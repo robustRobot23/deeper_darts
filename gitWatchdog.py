@@ -20,4 +20,4 @@ if __name__ == "__main__":
     while True:
         print("Checking for changes...")
         push_changes()
-        time.sleep(300)  # 300 seconds = 5 minutes
+        time.sleep(1200)  # 1200 seconds = 20 minutes
