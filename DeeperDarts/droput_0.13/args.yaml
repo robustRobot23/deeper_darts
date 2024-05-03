@@ -13,7 +13,7 @@ cache: false
 device: null
 workers: 8
 project: DeeperDarts
-name: droput_0.1
+name: droput_0.13
 exist_ok: false
 pretrained: true
 optimizer: Adam
@@ -32,7 +32,7 @@ freeze: null
 multi_scale: false
 overlap_mask: true
 mask_ratio: 4
-dropout: 0.1
+dropout: 0.2
 val: true
 split: val
 save_json: false
@@ -102,4 +102,4 @@ erasing: 0.4
 crop_fraction: 1.0
 cfg: null
 tracker: botsort.yaml
-save_dir: DeeperDarts/droput_0.1
+save_dir: DeeperDarts/droput_0.13
