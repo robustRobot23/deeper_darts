@@ -6,6 +6,7 @@ import random
 import sys
 import logging
 import csv
+import time
 
 est_cal_pts_cnt = 0
 
@@ -183,6 +184,7 @@ if __name__ == '__main__':
     log_file = f"{log_dir}/processing_output.log"
     logging.basicConfig(filename=log_file, filemode='w', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+    start_time = time.time_ns()
     for i in range(len(images)):
         image = images[i]
         image_name = images[i].split('/')[-1]
@@ -216,10 +218,12 @@ if __name__ == '__main__':
         img = draw(cv2.cvtColor(img, cv2.COLOR_RGB2BGR), xy[:, :2], cfg, circles=False, score=True)
         cv2.imwrite(osp.join(labeled_img_dir, image_name), img)
 
+    total_inference_time = time.time_ns() - start_time
+    avg_inference_time_ms = round((total_inference_time/len(images)) / 1e6, 2)
     abs_errors = map(abs, errors)
 
-    avg_abs_error = sum(abs_errors)/len(errors)
-    avg_error = sum(errors)/len(errors)
+    avg_abs_error = round(sum(abs_errors)/len(errors),1)
+    avg_error = round(sum(errors)/len(errors),)
     PCS = round((100/len(errors))*no_error_total,1)
 
     test_name = most_recent_directory
@@ -230,10 +234,11 @@ if __name__ == '__main__':
         reader = csv.reader(f)
         for row in reader:
             epochs = row[0]
+    epochs = f"{epochs}".strip()
 
     # Append the results to a CSV file
     with open('test_results.csv', mode='a', newline='') as file:
-        file.write(f"\n{test_name},{strip(epochs)},{PCS},{avg_abs_error},{avg_abs_error}")
+        file.write(f"\n{test_name},{epochs},{PCS},{avg_error},{avg_abs_error},{avg_inference_time_ms}")
 
     print(f"Average absolute error:{sum(abs_errors)/len(errors)}")
     print(f"Average error: {sum(errors)/len(errors)}")
