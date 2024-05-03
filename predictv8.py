@@ -146,20 +146,20 @@ if __name__ == '__main__':
     images = list_images_in_folder(image_folder_path)
 
     # Directory to search for weights
-    directory = 'DeeperDarts'
+    results_directory = 'DeeperDarts'
 
     # Get list of directories in the specified directory
-    directories = [d for d in os.listdir(directory) if os.path.isdir(os.path.join(directory, d))]
+    results_directories = [d for d in os.listdir(results_directory) if os.path.isdir(os.path.join(results_directory, d))]
 
     # Sort directories by modification time (most recent first)
-    directories.sort(key=lambda x: os.path.getmtime(os.path.join(directory, x)), reverse=True)
+    results_directories.sort(key=lambda x: os.path.getmtime(os.path.join(results_directory, x)), reverse=True)
 
     # Get the most recent directory
-    if directories:
-        most_recent_directory = directories[0]
+    if results_directories:
+        most_recent_directory = results_directories[0]
         print("Most recent directory:", most_recent_directory)
     else:
-        print("No directories found in", directory)
+        print("No directories found in", results_directory)
     
     best_weights_path = f'DeeperDarts/{most_recent_directory}/weights/best.pt'
 
@@ -168,11 +168,13 @@ if __name__ == '__main__':
     errors = []
     no_error_total = 0
 
-    results_dir = f"datasets/test/{most_recent_directory}"
-    os.makedirs(results_dir, exist_ok=True)
-    labeled_img_dir = image_folder_path.replace("images", f"{most_recent_directory}_scored_images")
+    recent_results_img_dir = f"datasets/test/{most_recent_directory}"
+    os.makedirs(recent_results_img_dir, exist_ok=True)
+    
+    labeled_img_dir = f"{recent_results_img_dir}/{scored_images}"
     os.makedirs(labeled_img_dir, exist_ok=True)
-    predicted_img_dir = image_folder_path.replace("images", "{most_recent_directory}_predicted_images")
+
+    predicted_img_dir = f"{recent_results_img_dir}/{predicted_images}"
     os.makedirs(predicted_img_dir, exist_ok=True)
 
     # Set up logging
@@ -218,10 +220,14 @@ if __name__ == '__main__':
     avg_error = sum(errors)/len(errors)
     PCS = round((100/len(errors))*no_error_total,1)
 
+    test_name = most_recent_directory
+
+    #read results.csv
+    with open(f"")
     # Append the results to a CSV file
     with open(csv_file, mode='a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow([test, epochs, PCS])
+        writer.writerow([test_name, epochs, PCS])
 
     print(f"Average absolute error:{sum(abs_errors)/len(errors)}")
     print(f"Average error: {sum(errors)/len(errors)}")
