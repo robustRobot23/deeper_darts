@@ -170,7 +170,7 @@ if __name__ == '__main__':
 
     recent_results_img_dir = f"datasets/test/{most_recent_directory}"
     os.makedirs(recent_results_img_dir, exist_ok=True)
-    
+
     labeled_img_dir = f"{recent_results_img_dir}/scored_images"
     os.makedirs(labeled_img_dir, exist_ok=True)
 
@@ -229,12 +229,11 @@ if __name__ == '__main__':
         epochs = 0
         reader = csv.reader(f)
         for row in reader:
-            epochs = row['epoch']
+            epochs = row[0]
 
     # Append the results to a CSV file
     with open('test_results.csv', mode='a', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow([test_name, epochs, PCS, avg_abs_error, avg_abs_error])
+        file.write(f"\n{test_name},{strip(epochs)},{PCS},{avg_abs_error},{avg_abs_error}")
 
     print(f"Average absolute error:{sum(abs_errors)/len(errors)}")
     print(f"Average error: {sum(errors)/len(errors)}")
