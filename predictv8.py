@@ -171,14 +171,16 @@ if __name__ == '__main__':
     recent_results_img_dir = f"datasets/test/{most_recent_directory}"
     os.makedirs(recent_results_img_dir, exist_ok=True)
     
-    labeled_img_dir = f"{recent_results_img_dir}/{scored_images}"
+    labeled_img_dir = f"{recent_results_img_dir}/scored_images"
     os.makedirs(labeled_img_dir, exist_ok=True)
 
-    predicted_img_dir = f"{recent_results_img_dir}/{predicted_images}"
+    predicted_img_dir = f"{recent_results_img_dir}/predicted_images"
     os.makedirs(predicted_img_dir, exist_ok=True)
 
     # Set up logging
-    log_file = "processing_output.log"
+    log_dir = f"test_logs/{most_recent_directory}"
+    os.makedirs(log_dir, exist_ok=True)
+    log_file = f"{log_dir}/processing_output.log"
     logging.basicConfig(filename=log_file, filemode='w', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
     for i in range(len(images)):
@@ -201,10 +203,10 @@ if __name__ == '__main__':
         error = sum(get_dart_scores(xy, cfg, numeric=True)) - sum(get_dart_scores(label_xy, cfg, numeric=True))
         errors.append(error)
         if error != 0:
-            print(f"Scoring board from image {image_name}")
-            print(f"Predicted Score: {predicted_score}")
-            print(f"Actual Score: {actual_score}") 
-            print(f"Error: {error}")
+            # print(f"Scoring board from image {image_name}")
+            # print(f"Predicted Score: {predicted_score}")
+            # print(f"Actual Score: {actual_score}") 
+            # print(f"Error: {error}")
             logging.log(logging.WARN, f"Image {image_folder_path}/{image_name} had an error of {error}. Actual score: {actual_score}, Predicted score: {predicted_score}")
         else:
             no_error_total += 1
@@ -222,12 +224,17 @@ if __name__ == '__main__':
 
     test_name = most_recent_directory
 
-    #read results.csv
-    with open(f"")
+    #read training results.csv
+    with open(f"{results_directory}/{most_recent_directory}/results.csv") as f:
+        epochs = 0
+        reader = csv.reader(f)
+        for row in reader:
+            epochs = row['epoch']
+
     # Append the results to a CSV file
-    with open(csv_file, mode='a', newline='') as file:
+    with open('test_results.csv', mode='a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow([test_name, epochs, PCS])
+        writer.writerow([test_name, epochs, PCS, avg_abs_error, avg_abs_error])
 
     print(f"Average absolute error:{sum(abs_errors)/len(errors)}")
     print(f"Average error: {sum(errors)/len(errors)}")
