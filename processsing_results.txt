@@ -5,3 +5,9 @@ Average absolute error:2.3622047244094486
 Average error: 0.9291338582677166
 PCS: 91.3%
 Estimated Calibration Points 0 times
+
+Results DeepDarts3:
+Average absolute error:3.4645669291338583
+Average error: 1.8267716535433072
+PCS: 88.2%
+Estimated Calibration Points 0 times
