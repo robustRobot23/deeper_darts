@@ -3,11 +3,9 @@ import os
 import numpy as np
 from dataset.annotate import draw, get_dart_scores
 import random
-# def remove_overlapping_darts(bboxes):
+import sys
 import logging
-# Set up logging
-log_file = "processing_output.log"
-logging.basicConfig(filename=log_file, filemode='w', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+import csv
 
 est_cal_pts_cnt = 0
 
@@ -132,29 +130,54 @@ def get_label_xy(image_name, folder_path, max_darts=3):
 
 if __name__ == '__main__':
     from ultralytics import YOLO
+    print("imported yolo")
+
     from yacs.config import CfgNode as CN
     import os.path as osp
 
+    #load configuration
     cfg = CN(new_allowed=True)
     cfg.merge_from_file('configs/deepdarts_d1.yaml')
     
-    # image_folder_path = 'some_test_imgs'
-    # image_folder_path  = 'Personal Dart Board Images'
-    # image_folder_path = '40_epoch_results'
-    # image_folder_path = 'datasets/val/images/d1_03_23_2020'
+    #path to test images
     image_folder_path = 'datasets/test/images/d1_03_31_2020'
+
+    #make a list of all image paths
     images = list_images_in_folder(image_folder_path)
-    print("imported yolo")
-    # best_weights_path = 'runs/detect/SecondRun/weights/best.pt'
-    best_weights_path = 'runs/detect/DeeperDarts4/weights/best.pt'
+
+    # Directory to search for weights
+    directory = 'DeeperDarts'
+
+    # Get list of directories in the specified directory
+    directories = [d for d in os.listdir(directory) if os.path.isdir(os.path.join(directory, d))]
+
+    # Sort directories by modification time (most recent first)
+    directories.sort(key=lambda x: os.path.getmtime(os.path.join(directory, x)), reverse=True)
+
+    # Get the most recent directory
+    if directories:
+        most_recent_directory = directories[0]
+        print("Most recent directory:", most_recent_directory)
+    else:
+        print("No directories found in", directory)
+    
+    best_weights_path = f'DeeperDarts/{most_recent_directory}/weights/best.pt'
+
+    #load model
     model = YOLO(best_weights_path)
     errors = []
     no_error_total = 0
 
-    labeled_img_dir = image_folder_path.replace("images", "scored_images")
+    results_dir = f"datasets/test/{most_recent_directory}"
+    os.makedirs(results_dir, exist_ok=True)
+    labeled_img_dir = image_folder_path.replace("images", f"{most_recent_directory}_scored_images")
     os.makedirs(labeled_img_dir, exist_ok=True)
-    predicted_img_dir = image_folder_path.replace("images", "predicted_images")
+    predicted_img_dir = image_folder_path.replace("images", "{most_recent_directory}_predicted_images")
     os.makedirs(predicted_img_dir, exist_ok=True)
+
+    # Set up logging
+    log_file = "processing_output.log"
+    logging.basicConfig(filename=log_file, filemode='w', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
     for i in range(len(images)):
         image = images[i]
@@ -190,6 +213,16 @@ if __name__ == '__main__':
         cv2.imwrite(osp.join(labeled_img_dir, image_name), img)
 
     abs_errors = map(abs, errors)
+
+    avg_abs_error = sum(abs_errors)/len(errors)
+    avg_error = sum(errors)/len(errors)
+    PCS = round((100/len(errors))*no_error_total,1)
+
+    # Append the results to a CSV file
+    with open(csv_file, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([test, epochs, PCS])
+
     print(f"Average absolute error:{sum(abs_errors)/len(errors)}")
     print(f"Average error: {sum(errors)/len(errors)}")
     print(f"PCS: {round((100/len(errors))*no_error_total,1)}%")
