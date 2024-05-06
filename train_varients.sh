@@ -1,9 +1,11 @@
 #!/bin/bash
 
-test_names=("adam_dropout_0.1" "adam_dropout_0.3" "adam_dropout_0.4" "SGD" "RMSProp" "RAdam")
-dropouts=(0.1 0.3 0.4 0 0 0)
-optimizers=("Adam" "Adam" "Adam" "SGD" "RMSProp" "RAdam")
-
+# test_names=("adam_dropout_0.1" "adam_dropout_0.3" "adam_dropout_0.4" "SGD" "RMSProp" "RAdam")
+# dropouts=(0.1 0.3 0.4 0 0 0)
+# optimizers=("Adam" "Adam" "Adam" "SGD" "RMSProp" "RAdam")
+test_names=("RMSProp" "RAdam")
+dropouts=(0 0)
+optimizers=("RMSProp" "RAdam")
 
 for i in "${!test_names[@]}"; do
     test_name="${test_names[i]}"
