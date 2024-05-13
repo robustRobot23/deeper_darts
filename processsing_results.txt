@@ -11,3 +11,12 @@ Average absolute error:3.4645669291338583
 Average error: 1.8267716535433072
 PCS: 88.2%
 Estimated Calibration Points 0 times
+
+
+
+test_name,epochs,PCS,avg_error,avg_abs_error,avg_inference_time_ms
+droput_0.13,100,88.2,1.8,3.5,9.68
+adam_dropout_0.1,100,88.2,2,3.5,817.63
+adam_dropout_0.3,100,88.2,2,3.5,63.99
+adam_dropout_0.4,100,88.2,2,3.5,63.23
+SGD,100,89.0,1,2.9,63.58
