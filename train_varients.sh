@@ -2,10 +2,10 @@
 
 # test_names=("adam_dropout_0.1" "adam_dropout_0.3" "adam_dropout_0.4" "SGD" "RMSProp" "RAdam")
 
-test_names=("Scale_1" "Shear_20" "Rot_15" "Scale_0.7" "Shear_30" "Rot_25")
-scales=(1 0 0 0.7 0)
-shears=(0 20 0 0 30 0)
-rotations=(0 0 15 0 0 25)
+test_names=("Rot_15" "Scale_0.7" "Shear_30" "Rot_25")
+scales=(0 0.7 0 0)
+shears=(0 0 30 0)
+rotations=(15 0 0 25)
 for i in "${!test_names[@]}"; do
     test_name="${test_names[i]}"
     scale="${scales[i]}"
