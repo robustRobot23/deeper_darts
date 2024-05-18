@@ -245,7 +245,7 @@ if __name__ == '__main__':
     cfg = CN(new_allowed=True)
     cfg.merge_from_file('configs/deepdarts_d1.yaml')
 
-    model_directories = ["Rot_153","Rot_252","Scale_0.72","Scale_1","Shear_20","Shear_302"]
-    
+    # model_directories = ["Rot_153","Rot_252","Scale_0.72","Scale_1","Shear_20","Shear_302"]
+    model_directories =   ["Shear_30_Scale_1_Rot_8", "Shear_30_Scale_1_Rot_152"]  
     for model_directory in model_directories:
         predict(model_directory)

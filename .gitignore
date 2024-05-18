@@ -11,4 +11,5 @@ all_labels.tsv
 *.out*
 */images
 *dataset/*
-*datasets/*
+datasets/train/
+datasets/val/
