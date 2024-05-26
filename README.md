@@ -12,8 +12,10 @@ Training a YOLOv8 model on dart board images anottated by [DeepDarts](https://gi
 
 
 ## Training
+First change the train and val directories in data_custom.yaml to match your directory
 To train enter into terminal ```yolo task=detect mode=train epochs=100 data=data_custom.yaml model=models/yolov8n.pt imgsz=800``` (can enter other params if desired), (this will download yolov8n.pt)
 You may need to adjust the batch sizes to fit your total GPU memory. The default batch sizes are for 24 GB total GPU memory.
+
 ## Predicting
 Open ```predictv8.py``` and enter the directory of the newly trained model, then run it.
 
