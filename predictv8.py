@@ -212,7 +212,7 @@ def predict(model_directory):
     abs_errors = map(abs, errors)
 
     avg_abs_error = round(sum(abs_errors)/len(errors),1)
-    avg_error = round(sum(errors)/len(errors),)
+    avg_error = round(sum(errors)/len(errors),1)
     PCS = round((100/len(errors))*no_error_total,1)
 
     test_name = model_directory
@@ -246,6 +246,8 @@ if __name__ == '__main__':
     cfg.merge_from_file('configs/deepdarts_d1.yaml')
 
     # model_directories = ["Rot_153","Rot_252","Scale_0.72","Scale_1","Shear_20","Shear_302"]
-    model_directories =   ["Shear_30_Scale_1_Rot_8", "Shear_30_Scale_1_Rot_152"]  
+    # model_directories =   ["Shear_30_Scale_1_Rot_8", "Shear_30_Scale_1_Rot_152"]  
+    results_dir = "DeeperDarts"
+    model_directories = [d for d in os.listdir(results_dir) if os.path.isdir(os.path.join(results_dir, d))]
     for model_directory in model_directories:
         predict(model_directory)
