@@ -1,7 +1,7 @@
 import cv2
 import os
 import numpy as np
-from dataset.annotate import draw, get_dart_scores
+from datasets.annotate import draw, get_dart_scores
 import random
 import sys
 import logging

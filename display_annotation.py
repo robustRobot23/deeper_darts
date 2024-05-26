@@ -1,3 +1,4 @@
+# Used for testing the label extraction
 import matplotlib.pyplot as plt
 
 def display_from_list(image_filepath, xys):
