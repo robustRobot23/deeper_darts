@@ -11,6 +11,10 @@ import time
 est_cal_pts_cnt = 0
 
 def bboxes_to_xy(bboxes, max_darts=3):
+    '''
+    Modified from DeepDarts.
+    Converts bounding box output from YOLOv8 of all classes to an xy centre point
+    '''
     xy = np.zeros((4 + max_darts, 3), dtype=np.float32)
     num_darts = 0
     max_darts_exceeded = False
@@ -55,6 +59,10 @@ def bboxes_to_xy(bboxes, max_darts=3):
 
 
 def est_cal_pts(xy):
+    '''
+    From DeepDarts
+    Estimates any missed calibration points
+    '''
     global est_cal_pts_cnt
     est_cal_pts_cnt += 1
     missing_idx = np.where(xy[:4, -1] == 0)[0]
@@ -103,6 +111,9 @@ def list_images_in_folder(folder_path):
     return image_list
 
 def get_label_xy(image_name, folder_path, max_darts=3):
+    '''
+    Gets the xy points from the label. Used for calculating 'actual' dart score.
+    '''
     label_name = image_name.replace("JPG", "txt")
     label_path = f"{folder_path}/{label_name}".replace("images", "labels")
     # print(f"Label path: {label_path}")
@@ -131,6 +142,9 @@ def get_label_xy(image_name, folder_path, max_darts=3):
 
 
 def predict(model_directory):
+    '''
+    Used to predict dart location in 'image_folder_path' using the model in 'model_directory' 
+    '''
     #path to test images
     image_folder_path = 'datasets/test/images/d1_03_31_2020'
 

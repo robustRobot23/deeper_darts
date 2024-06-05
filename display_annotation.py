@@ -1,4 +1,8 @@
-# Used for testing the label extraction
+'''
+*** Not Used ***
+Used for testing the label extraction
+May show the labels as flipped - yolo flips them back
+'''
 import matplotlib.pyplot as plt
 
 def display_from_list(image_filepath, xys):
