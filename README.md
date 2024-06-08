@@ -2,8 +2,8 @@ Training a YOLOv8 model on dart board images anottated by [DeepDarts](https://gi
 
 ## Setup
 1. [Install Anaconda or Miniconda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html)
-2. Create a new conda environment with Python 3.7: ```$ conda create -n deep-darts python==3.7```. Activate the environment: ```$ conda activate deeper-darts```
-4. Clone this repo: ```$ git clone https://github.com/wmcnally/deep-darts.git```
+2. Create a new conda environment with Python 3.7: ```$ conda create -n deeper-darts python==3.7```. Activate the environment: ```$ conda activate deeper-darts```
+4. Clone this repo: ```$ git clone https://github.com/robustRobot23/deeper_darts.git```
 5. Go into the directory and install the dependencies: ```$ cd deeper-darts && pip install -r requirements.txt```
 6. Download the ```cropped_images.zip``` 800x800 cropped images directly from [IEEE Dataport](https://ieee-dataport.org/open-access/deepdarts-dataset). Extract and place in datasets/images/{train, val, or test}. (70:20:10) is a common split.
 9. Download ```labels_pkl.zip```, and extract in the main directory.
